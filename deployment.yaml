@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-cd
+  labels:
+    app: springboot-cd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-cd
+  template:
+    metadata:
+      labels:
+        app: springboot-cd
+    spec:
+      containers:
+        - name: springboot-container
+          image: neathtan/springboot-api
+          ports:
+            - containerPort: 8080
