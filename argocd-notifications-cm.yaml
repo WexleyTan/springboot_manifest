@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  context: |
+    argocdUrl: 137.184.250.149
+  service.telegram: |
+    token: $telegram-token
+
+    // Template for sync-succeeded
+    template.app-sync-succeeded: |
+    telegram:
+    message: |
+        🚀 * Application {{.app.metadata.name}} Have Been Deploy Successfully! *
+        *Application:* {{.app.metadata.name}}
+        *Sync Status:* {{.app.status.sync.status}}
+        *Details:* [View Application]({{.context.argocdUrl}}/applications/{{.app.metadata.name}})
+        ---
+        _Repository:_ {{.app.spec.source.repoURL}}
+        _Synced At:_ {{.app.status.operationState.finishedAt}}
+        _Health Status:_ {{.app.status.health.statu
+
+     // Trigger when sync-succeeded  
+    trigger.on-sync-succeeded: |
+        - description: Application deployment has succeeded
+          send:
+          - app-sync-succeeded // name of the Template that we define above
+          when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy' 
